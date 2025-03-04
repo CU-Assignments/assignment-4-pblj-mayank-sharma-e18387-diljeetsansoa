@@ -1,0 +1,84 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class Card {
+    private String rank;
+    private String symbol;
+
+    public Card(String rank, String symbol) {
+        this.rank = rank;
+        this.symbol = symbol;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    @Override
+    public String toString() {
+        return rank + " of " + symbol;
+    }
+}
+
+public class CardCollection {
+
+    private static Map<String, ArrayList<Card>> cardCollection = new HashMap<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Initializing cards
+        addCards();
+
+        while (true) {
+            System.out.print("\nEnter the symbol (e.g., 'Hearts', 'Spades') to find all cards of that symbol (or type 'exit' to quit): ");
+            String symbol = scanner.nextLine();
+
+            if (symbol.equalsIgnoreCase("exit")) {
+                break;
+            }
+
+            displayCardsBySymbol(symbol);
+        }
+
+        scanner.close();
+    }
+
+    public static void addCards() {
+        ArrayList<Card> hearts = new ArrayList<>();
+        ArrayList<Card> spades = new ArrayList<>();
+        ArrayList<Card> diamonds = new ArrayList<>();
+        ArrayList<Card> clubs = new ArrayList<>();
+
+        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
+
+        for (String rank : ranks) {
+            hearts.add(new Card(rank, "Hearts"));
+            spades.add(new Card(rank, "Spades"));
+            diamonds.add(new Card(rank, "Diamonds"));
+            clubs.add(new Card(rank, "Clubs"));
+        }
+
+        cardCollection.put("Hearts", hearts);
+        cardCollection.put("Spades", spades);
+        cardCollection.put("Diamonds", diamonds);
+        cardCollection.put("Clubs", clubs);
+    }
+
+    public static void displayCardsBySymbol(String symbol) {
+        if (cardCollection.containsKey(symbol)) {
+            System.out.println("\nCards of " + symbol + ":");
+            for (Card card : cardCollection.get(symbol)) {
+                System.out.println(card);
+            }
+        } else {
+            System.out.println("Symbol not found. Please enter a valid symbol.");
+        }
+    }
+}
