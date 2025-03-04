@@ -1,0 +1,70 @@
+class TicketBooking {
+    private int availableSeats;
+
+    public TicketBooking(int seats) {
+        this.availableSeats = seats;
+    }
+
+    public synchronized boolean bookTicket(String customerType) {
+        if (availableSeats > 0) {
+            System.out.println(customerType + " booking: Ticket booked successfully! Seats left: " + --availableSeats);
+            return true;
+        } else {
+            System.out.println(customerType + " booking: No seats available.");
+            return false;
+        }
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+}
+
+class BookingThread extends Thread {
+    private TicketBooking ticketBooking;
+    private String customerType;
+
+    public BookingThread(TicketBooking ticketBooking, String customerType) {
+        this.ticketBooking = ticketBooking;
+        this.customerType = customerType;
+    }
+
+    @Override
+    public void run() {
+        boolean success = false;
+        while (!success) {
+            success = ticketBooking.bookTicket(customerType);
+            if (!success) {
+                try {
+                    Thread.sleep(1000);  // Wait for a second before retrying
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+}
+
+public class TicketBookingSystem {
+    public static void main(String[] args) {
+        TicketBooking ticketBooking = new TicketBooking(5); // Total of 5 seats available
+
+        // Create VIP and regular customer threads
+        BookingThread vipCustomer1 = new BookingThread(ticketBooking, "VIP");
+        BookingThread regularCustomer1 = new BookingThread(ticketBooking, "Regular");
+        BookingThread vipCustomer2 = new BookingThread(ticketBooking, "VIP");
+        BookingThread regularCustomer2 = new BookingThread(ticketBooking, "Regular");
+
+        // Set VIP customer threads to have higher priority
+        vipCustomer1.setPriority(Thread.MAX_PRIORITY);
+        vipCustomer2.setPriority(Thread.MAX_PRIORITY);
+        regularCustomer1.setPriority(Thread.NORM_PRIORITY);
+        regularCustomer2.setPriority(Thread.NORM_PRIORITY);
+
+        // Start threads
+        vipCustomer1.start();
+        regularCustomer1.start();
+        vipCustomer2.start();
+        regularCustomer2.start();
+    }
+}
